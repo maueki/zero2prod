@@ -5,7 +5,6 @@ use zero2prod::startup::run;
 use zero2prod::telemetry::{get_subscriber, init_subscriber};
 use uuid::Uuid;
 use once_cell::sync::Lazy;
-use secrecy::ExposeSecret;
 
 static TRACING: Lazy<()> = Lazy::new(|| {
     let default_filter_level = "info".to_string();
@@ -138,7 +137,7 @@ async fn subscribe_returns_a_400_when_data_is_missing() {
 }
 
 #[tokio::test]
-async fn subscribe_returns_a_200_when_fileds_are_present_but_empty() {
+async fn subscribe_returns_a_400_when_fields_are_present_but_invalid() {
     let app = spawn_app().await;
 
     let client = reqwest::Client::new();
@@ -158,7 +157,7 @@ async fn subscribe_returns_a_200_when_fileds_are_present_but_empty() {
             .expect("Failed to execute request.");
 
         assert_eq!(
-            200,
+            400,
             response.status().as_u16(),
             "The API did not return a 200 OK when the payload was {}.",
             description
